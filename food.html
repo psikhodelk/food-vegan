@@ -5,47 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой План Питания</title>
     <style>
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f0f4f8; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h1 { text-align: center; color: #2c3e50; font-size: 1.6em; border-bottom: 2px solid #1abc9c; padding-bottom: 10px; margin-bottom: 20px; }
-        .alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 0.85em; }
+        /* Новая пастельно-травяная цветовая гамма */
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f2f1ed; color: #4a4a4a; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        h1 { text-align: center; color: #2c3e50; font-size: 1.5em; border-bottom: 2px solid #a3b19b; padding-bottom: 12px; margin-bottom: 20px; letter-spacing: 0.5px; }
+        .alert { background: #fdf6ec; border-left: 4px solid #e6a23c; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 0.85em; color: #b88230; }
         
-        /* Сетка трекера */
-        .tracker-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
-        .day-card { background: #1abc9c; color: white; padding: 20px; border-radius: 12px; text-align: center; font-weight: bold; cursor: pointer; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
-        .day-card:hover { transform: translateY(-3px); background-color: #16a085; }
-        .day-card.weekend { background: #3498db; }
-        .day-card.weekend:hover { background-color: #2980b9; }
+        /* Сетка трекера в шалфейных тонах */
+        .tracker-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 10px; }
+        .day-card { background: #a3b19b; color: white; padding: 20px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 4px 12px rgba(163, 177, 155, 0.2); letter-spacing: 0.3px; }
+        .day-card:hover { transform: translateY(-3px); background-color: #8f9f85; }
+        .day-card.weekend { background: #8fa4b8; box-shadow: 0 4px 12px rgba(143, 164, 184, 0.2); }
+        .day-card.weekend:hover { background-color: #7991a8; }
         .full-width { grid-column: span 2; }
 
         /* Всплывающее окно (Модальное) */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-        .modal-content { background-color: #fff; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative; max-height: 80vh; overflow-y: auto; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #7f8c8d; cursor: pointer; }
-        .close-btn:hover { color: #333; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.4); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-content { background-color: #ffffff; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); position: relative; max-height: 85vh; overflow-y: auto; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #95a5a6; cursor: pointer; }
+        .close-btn:hover { color: #34495e; }
         
         /* Стили текста в модальном окне */
-        .modal-title { color: #2c3e50; font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
-        .schedule-item { margin-bottom: 12px; border-left: 3px solid #1abc9c; padding-left: 10px; }
-        .time { font-weight: bold; color: #2c3e50; font-size: 0.95em; }
-        .supplement { color: #8e44ad; font-weight: bold; font-size: 0.9em; }
-        .meal { font-weight: bold; color: #27ae60; }
-        ul { padding-left: 18px; margin: 4px 0; font-size: 0.9em; }
+        .modal-title { color: #2c3e50; font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #f2f1ed; padding-bottom: 8px; margin-bottom: 15px; }
+        .schedule-item { margin-bottom: 12px; border-left: 3px solid #a3b19b; padding-left: 10px; }
+        .time { font-weight: 600; color: #2c3e50; font-size: 0.95em; }
+        .supplement { color: #8e6b9e; font-weight: bold; font-size: 0.9em; }
+        .meal { font-weight: bold; color: #5a7d65; }
+        ul { padding-left: 18px; margin: 4px 0; font-size: 0.9em; color: #555; }
 
-        /* Кнопка и блок списка покупок */
-        .btn { display: block; width: 100%; padding: 12px; background-color: #2c3e50; color: white; text-align: center; border: none; border-radius: 8px; font-size: 1em; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
-        .btn:hover { background-color: #34495e; }
-        #shopping-list { display: none; background: #ecf0f1; padding: 15px; border-radius: 8px; margin-top: 15px; }
-        #shopping-list h2 { color: #2c3e50; font-size: 1.1em; margin-top: 0; }
-        .checklist-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.9em; }
-        .checklist-item input { margin-right: 10px; }
-        .category-title { font-weight: bold; color: #7f8c8d; margin-top: 12px; margin-bottom: 4px; font-size: 0.85em; text-transform: uppercase; }
-        .store-label { font-size: 0.8em; color: #1abc9c; font-weight: bold; }
+        /* Динамический блок списка покупок внутри модалки */
+        .shopping-section { background: #f9f8f6; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #f2f1ed; }
+        .shopping-section h4 { color: #2c3e50; font-size: 1em; margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6e1; padding-bottom: 5px; }
+        .checklist-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.9em; color: #555; }
+        .checklist-item input { margin-right: 10px; transform: scale(1.1); cursor: pointer; }
+        .store-label { font-size: 0.8em; color: #a3b19b; font-weight: bold; margin-left: 5px; }
+        
+        .footer-note { text-align: center; font-size: 0.75em; color: #999; margin-top: 20px; border-top: 1px solid #f2f1ed; padding-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Трекер питания и режима</h1>
+        <h1>Мой Трекер Питания</h1>
         
         <div class="alert">
             <strong>⚠️ Памятка:</strong> Зеленый чай пейте за 1 час до или через 1 час после еды. Сон — 5.5 часов.
@@ -53,33 +53,13 @@
 
         <!-- Сетка с днями -->
         <div class="tracker-grid">
-            <div class="day-card" onclick="openModal('mon-tue')">Понедельник и Вторник</div>
-            <div class="day-card" onclick="openModal('wed-thu')">Среда и Четверг</div>
+            <div class="day-card" onclick="openModal('mon-tue')">Пн & Вт</div>
+            <div class="day-card" onclick="openModal('wed-thu')">Ср & Чт</div>
             <div class="day-card full-width" onclick="openModal('fri')">Пятница (Разгрузка)</div>
             <div class="day-card weekend full-width" onclick="openModal('weekend')">Суббота и Воскресенье</div>
         </div>
-
-        <button class="btn" onclick="toggleShoppingList()">📋 Показать список покупок</button>
-
-        <!-- Чек-лист покупок -->
-        <div id="shopping-list">
-            <h2>Чек-лист (Без холодильника)</h2>
-            <p style="font-size: 0.8em; color: #7f8c8d;">Рис, гречка и красная чечевица уже есть.</p>
-            
-            <div class="category-title">Консервы и Бакалея</div>
-            <div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» (натур.), 400 г — 1 банка <span class="store-label">[Перекресток]</span></span></div>
-            <div class="checklist-item"><input type="checkbox"><span>Цельнозерновые хлебцы — 1 пачка <span class="store-label">[Везде]</span></span></div>
-            <div class="checklist-item"><input type="checkbox"><span>Оливковое или льняное масло — 1 бут. <span class="store-label">[Везде]</span></span></div>
-            
-            <div class="category-title">Овощи и фрукты</div>
-            <div class="checklist-item"><input type="checkbox"><span>Зеленые крупные яблоки — 4 шт. <span class="store-label">[Везде]</span></span></div>
-            <div class="checklist-item"><input type="checkbox"><span>Свежие огурцы — 4 шт. <span class="store-label">[Везде]</span></span></div>
-            <div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль — 1 пачка <span class="store-label">[Везде]</span></span></div>
-            <div class="checklist-item"><input type="checkbox"><span>Пекинская капуста — 1 шт. <span class="store-label">[Евроспар/Лента]</span></span></div>
-            
-            <div class="category-title">Орехи</div>
-            <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (миндаль / фундук) — 150 г <span class="store-label">[Евроспар/Перекресток]</span></span></div>
-        </div>
+        
+        <div class="footer-note">Нажмите на день, чтобы увидеть график и список покупок для него.</div>
     </div>
 
     <!-- Модальное окно -->
@@ -91,10 +71,10 @@
     </div>
 
     <script>
-        // База данных для модалок
+        // База данных для модалок (график + умный список покупок)
         const data = {
             'mon-tue': `
-                <h3 class="modal-title">Понедельник и Вторник</h3>
+                <h3 class="modal-title">Понедельник & Вторник</h3>
                 <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
                 <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
                 <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
@@ -116,9 +96,17 @@
                 </div>
                 <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
                 <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
+
+                <div class="shopping-section">
+                    <h4>Что купить на эти дни:</h4>
+                    <div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» <span class="store-label">[Перекресток]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Свежие огурцы (2 шт.) <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Зеленые яблоки (2 шт.) <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (60 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
+                </div>
             `,
             'wed-thu': `
-                <h3 class="modal-title">Среда и Четверг</h3>
+                <h3 class="modal-title">Среда & Четверг</h3>
                 <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
                 <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
                 <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
@@ -140,6 +128,14 @@
                 </div>
                 <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
                 <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
+
+                <div class="shopping-section">
+                    <h4>Что купить на эти дни:</h4>
+                    <div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Зеленые яблоки (2 шт.) <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Цельнозерновые хлебцы <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (60 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
+                </div>
             `,
             'fri': `
                 <h3 class="modal-title">Пятница (Разгрузка)</h3>
@@ -163,9 +159,16 @@
                 </div>
                 <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
                 <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
+
+                <div class="shopping-section">
+                    <h4>Что купить на этот день:</h4>
+                    <div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
+                </div>
             `,
             'weekend': `
-                <h3 class="modal-title">Суббота и Воскресенье</h3>
+                <h3 class="modal-title">Суббота & Воскресенье</h3>
                 <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
                 <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
                 <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
@@ -187,6 +190,13 @@
                 </div>
                 <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
                 <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон</div>
+
+                <div class="shopping-section">
+                    <h4>Что купить на выходные:</h4>
+                    <div class="checklist-item"><input type="checkbox"><span>Зеленые яблоки (2 шт.) <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div>
+                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (60 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
+                </div>
             `
         };
 
@@ -199,11 +209,6 @@
             if (event.target === document.getElementById('myModal')) {
                 document.getElementById('myModal').style.display = 'none';
             }
-        }
-
-        function toggleShoppingList() {
-            var list = document.getElementById("shopping-list");
-            list.style.display = (list.style.display === "none" || list.style.display === "") ? "block" : "none";
         }
     </script>
 </body>
