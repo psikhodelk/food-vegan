@@ -129,23 +129,12 @@
     </div>
 
     <script>
-        // Простая хэш-функция для защиты кодовой фразы в репозитории
-        function hashString(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = (hash << 5) - hash + str.charCodeAt(i);
-                hash |= 0;
-            }
-            return hash;
-        }
-
-        // Проверка авторизации
+        // Проверка авторизации простым сравнением текста
         function checkAuth() {
             const input = document.getElementById('access-code').value.trim();
-            // Хэш от фразы "Ника Титова"
-            const correctHash = -562207907; 
+            const correctPassword = "Ника Титова"; 
             
-            if (hashString(input) === correctHash) {
+            if (input === correctPassword) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
                 // Подгружаем данные
@@ -158,7 +147,7 @@
         const currentInventory = { rice: 800, buck: 400, lent: 340 };
         const fullInventory = { rice: 500, buck: 900, lent: 450 };
 
-        // Инициализация привязки к ключу (теперь жестко пишется в localStorage по ключу)
+        // Инициализация привязки к ключу в localStorage
         if (!localStorage.getItem('user_nika_inventory')) {
             localStorage.setItem('user_nika_inventory', JSON.stringify(currentInventory));
         }
