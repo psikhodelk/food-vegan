@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой План Питания</title>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: #2c3e50; border-bottom: 2px solid #1abc9c; padding-bottom: 10px; }
+        .alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px; font-size: 0.9em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+        th, td { border: 1px solid #e0e0e0; padding: 12px; text-align: left; vertical-align: top; }
+        th { background-color: #1abc9c; color: white; font-weight: 600; text-transform: uppercase; font-size: 0.85em; }
+        tr:nth-child(even) { background-color: #f9fbfb; }
+        .time { font-weight: bold; color: #2c3e50; white-space: nowrap; }
+        .supplement { color: #8e44ad; font-weight: bold; font-size: 0.9em; }
+        .meal { font-weight: bold; color: #27ae60; }
+        ul { padding-left: 18px; margin: 5px 0; font-size: 0.9em; }
+        
+        .btn { display: block; width: 100%; max-width: 300px; margin: 20px auto; padding: 12px; background-color: #3498db; color: white; text-align: center; border: none; border-radius: 6px; font-size: 1em; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background-color: #2980b9; }
+        #shopping-list { display: none; background: #ecf0f1; padding: 20px; border-radius: 8px; margin-top: 15px; }
+        #shopping-list h2 { color: #2c3e50; font-size: 1.2em; margin-top: 0; }
+        .checklist-item { display: flex; align-items: center; margin-bottom: 10px; font-size: 0.95em; }
+        .checklist-item input { margin-right: 10px; transform: scale(1.2); }
+        .category-title { font-weight: bold; color: #7f8c8d; margin-top: 15px; margin-bottom: 5px; font-size: 0.9em; text-transform: uppercase; }
+        .store-label { font-size: 0.8em; color: #1abc9c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>План питания и режим (Похудение)</h1>
+        
+        <div class="alert">
+            <strong>⚠️ Важно:</strong> Не запивайте еду зеленым чаем (выдерживайте паузу минимум 1 час до/после), чтобы не блокировать железо. Сон 5.5 часов — держите под контролем.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Понедельник & Вторник</th>
+                    <th>Среда & Четверг</th>
+                    <th>Пятница</th>
+                    <th>Суббота & Воскресенье</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="time">05:30</td>
+                    <td>⏰ Подъем</td>
+                    <td>⏰ Подъем</td>
+                    <td>⏰ Подъем</td>
+                    <td>⏰ Подъем (по желанию)</td>
+                </tr>
+                <tr>
+                    <td class="time">05:35</td>
+                    <td class="supplement">💊 L-carnitine (60 мл)</td>
+                    <td class="supplement">💊 L-carnitine (60 мл)</td>
+                    <td class="supplement">💊 L-carnitine (60 мл)</td>
+                    <td class="supplement">💊 L-carnitine (60 мл)</td>
+                </tr>
+                <tr>
+                    <td class="time">05:45</td>
+                    <td>🏃‍♀️ Разминка (20 мин)</td>
+                    <td>🏃‍♀️ Разминка (20 мин)</td>
+                    <td>🏃‍♀️ Разминка (20 мин)</td>
+                    <td>🏃‍♀️ Разминка (20 мин)</td>
+                </tr>
+                <tr>
+                    <td class="time">06:55</td>
+                    <td class="supplement">🧪 Drain (1 порция)</td>
+                    <td class="supplement">🧪 Drain (1 порция)</td>
+                    <td class="supplement">🧪 Drain (1 порция)</td>
+                    <td class="supplement">🧪 Drain (1 порция)</td>
+                </tr>
+                <tr>
+                    <td class="time">13:00</td>
+                    <td>
+                        <span class="meal">🥗 ОБЕД</span>
+                        <ul>
+                            <li>Гречка</li>
+                            <li>Фасоль «Маркет»</li>
+                            <li>Свежий огурец</li>
+                        </ul>
+                        <span class="supplement">💊 Пиколинат хрома</span>
+                    </td>
+                    <td>
+                        <span class="meal">🍛 ОБЕД</span>
+                        <ul>
+                            <li>Рис или гречка</li>
+                            <li>Стручковая фасоль</li>
+                            <li>Красная чечевица</li>
+                        </ul>
+                        <span class="supplement">💊 Пиколинат хрома</span>
+                    </td>
+                    <td>
+                        <span class="meal">🥗 ОБЕД</span>
+                        <ul>
+                            <li>Пюре из красной чечевицы</li>
+                            <li>Свежий огурец</li>
+                        </ul>
+                        <span class="supplement">💊 Пиколинат хрома</span>
+                    </td>
+                    <td>
+                        <span class="meal">🍛 ОБЕД (13:00-14:00)</span>
+                        <ul>
+                            <li>Крупа на выбор</li>
+                            <li>Стручковая фасоль</li>
+                            <li>Овощи</li>
+                        </ul>
+                        <span class="supplement">💊 Пиколинат хрома</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="time">18:00</td>
+                    <td>
+                        <span class="meal">🍏 ПЕРЕКУС (в вузе)</span>
+                        <ul>
+                            <li>30 г орехов</li>
+                            <li>1 зеленое яблоко</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <span class="meal">🧀 ПЕРЕКУС (в вузе)</span>
+                        <ul>
+                            <li>120 г Тофу</li>
+                            <li>2 хлебца</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <span class="meal">🍏 ПЕРЕКУС (в вузе)</span>
+                        <ul>
+                            <li>30 г орехов</li>
+                            <li>1 зеленое яблоко</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <span class="meal">🧀 УЖИН (до 19:00)</span>
+                        <ul>
+                            <li>150 г Тофу</li>
+                            <li>Свежая зелень</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="time">23:45</td>
+                    <td class="supplement">💊 Магний хелат</td>
+                    <td class="supplement">💊 Магний хелат</td>
+                    <td class="supplement">💊 Магний хелат</td>
+                    <td class="supplement">💊 Магний хелат</td>
+                </tr>
+                <tr>
+                    <td class="time">00:00</td>
+                    <td>😴 Сон (на пустой желудок)</td>
+                    <td>😴 Сон (на пустой желудок)</td>
+                    <td>😴 Сон (на пустой желудок)</td>
+                    <td>😴 Сон</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button class="btn" onclick="toggleShoppingList()">📋 Показать список покупок</button>
+
+        <div id="shopping-list">
+            <h2>Чек-лист для магазина (Без холодильника)</h2>
+            <p style="font-size: 0.85em; color: #7f8c8d;">Рис, гречка и красная чечевица у вас уже есть.</p>
+            
+            <div class="category-title">Бакалея и консервы</div>
+            <div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» (натуральная), 400 г — 1 банка <span class="store-label">[Перекресток]</span></span></div>
+            <div class="checklist-item"><input type="checkbox"><span>Сыр Тофу в вакууме, 200–250 г — 1 упаковка <span class="store-label">[Везде]</span></span></div>
+            <div class="checklist-item"><input type="checkbox"><span>Цельнозерновые хлебцы — 1 пачка <span class="store-label">[Везде]</span></span></div>
+            <div class="checklist-item"><input type="checkbox"><span>Растительное масло (оливковое / льняное) — 1 бут. <span class="store-label">[Везде]</span></span></div>
+            
+            <div class="category-title">Овощи и фрукты</div>
+            <div class="checklist-item"><input type="checkbox"><span>Зеленые крупные яблоки — 3 шт. <span class="store-label">[Везде]</span></span></div>
+            <div class="checklist-item"><input type="checkbox"><span>Свежие огурцы — 3-4 шт. <span class="store-label">[Везде]</span></span></div>
+            <div class="checklist-item"><input type="checkbox"><span>Замороженная стручковая фасоль — 1 пачка <span class="store-label">[Везде]</span></span></div>
+            <div class="checklist-item"><input type="checkbox"><span>Свежая зелень или пекинская капуста — 1 шт. <span class="store-label">[Евроспар / Лента]</span></span></div>
+            
+            <div class="category-title">Орехи</div>
+            <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (миндаль или фундук) — 100 г <span class="store-label">[Евроспар / Перекресток]</span></span></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleShoppingList() {
+            var list = document.getElementById("shopping-list");
+            if (list.style.display === "none" || list.style.display === "") {
+                list.style.display = "block";
+            } else {
+                list.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
