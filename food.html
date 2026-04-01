@@ -5,64 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой План Питания</title>
     <style>
-        /* Новая пастельно-травяная цветовая гамма */
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f2f1ed; color: #4a4a4a; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        h1 { text-align: center; color: #2c3e50; font-size: 1.5em; border-bottom: 2px solid #a3b19b; padding-bottom: 12px; margin-bottom: 20px; letter-spacing: 0.5px; }
-        .alert { background: #fdf6ec; border-left: 4px solid #e6a23c; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 0.85em; color: #b88230; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { text-align: center; color: #ffffff; font-size: 1.5em; border-bottom: 2px solid #2e7d32; padding-bottom: 12px; margin-bottom: 20px; letter-spacing: 0.5px; }
+        .alert { background: #2c1a04; border-left: 4px solid #ff9800; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 0.85em; color: #ffb74d; }
         
-        /* Сетка трекера в шалфейных тонах */
-        .tracker-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 10px; }
-        .day-card { background: #a3b19b; color: white; padding: 20px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 4px 12px rgba(163, 177, 155, 0.2); letter-spacing: 0.3px; }
-        .day-card:hover { transform: translateY(-3px); background-color: #8f9f85; }
-        .day-card.weekend { background: #8fa4b8; box-shadow: 0 4px 12px rgba(143, 164, 184, 0.2); }
-        .day-card.weekend:hover { background-color: #7991a8; }
-        .full-width { grid-column: span 2; }
-
-        /* Всплывающее окно (Модальное) */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.4); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-        .modal-content { background-color: #ffffff; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); position: relative; max-height: 85vh; overflow-y: auto; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #95a5a6; cursor: pointer; }
-        .close-btn:hover { color: #34495e; }
+        .tracker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+        .day-card { background: #2a2a2a; color: #ffffff; padding: 15px 5px; border-radius: 10px; text-align: center; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #3a3a3a; }
+        .day-card:hover { transform: translateY(-3px); background-color: #333333; border-color: #2e7d32; }
+        .day-card.weekend { border-color: #1976d2; }
+        .day-card.weekend:hover { border-color: #2196f3; }
         
-        /* Стили текста в модальном окне */
-        .modal-title { color: #2c3e50; font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #f2f1ed; padding-bottom: 8px; margin-bottom: 15px; }
-        .schedule-item { margin-bottom: 12px; border-left: 3px solid #a3b19b; padding-left: 10px; }
-        .time { font-weight: 600; color: #2c3e50; font-size: 0.95em; }
-        .supplement { color: #8e6b9e; font-weight: bold; font-size: 0.9em; }
-        .meal { font-weight: bold; color: #5a7d65; }
-        ul { padding-left: 18px; margin: 4px 0; font-size: 0.9em; color: #555; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1e1e1e; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); position: relative; max-height: 85vh; overflow-y: auto; border: 1px solid #333; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #757575; cursor: pointer; }
+        .close-btn:hover { color: #ffffff; }
+        
+        .modal-title { color: #ffffff; font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
+        .schedule-item { margin-bottom: 12px; border-left: 3px solid #2e7d32; padding-left: 10px; }
+        .time { font-weight: 600; color: #81c784; font-size: 0.95em; }
+        .supplement { color: #ba68c8; font-weight: bold; font-size: 0.9em; }
+        .meal { font-weight: bold; color: #4caf50; }
+        ul { padding-left: 18px; margin: 4px 0; font-size: 0.9em; color: #b0b0b0; }
 
-        /* Динамический блок списка покупок внутри модалки */
-        .shopping-section { background: #f9f8f6; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #f2f1ed; }
-        .shopping-section h4 { color: #2c3e50; font-size: 1em; margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6e1; padding-bottom: 5px; }
-        .checklist-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.9em; color: #555; }
+        .shopping-section { background: #252525; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #333; }
+        .shopping-section h4 { color: #ffffff; font-size: 1em; margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #3a3a3a; padding-bottom: 5px; }
+        .checklist-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.9em; color: #e0e0e0; }
         .checklist-item input { margin-right: 10px; transform: scale(1.1); cursor: pointer; }
-        .store-label { font-size: 0.8em; color: #a3b19b; font-weight: bold; margin-left: 5px; }
+        .store-label { font-size: 0.8em; color: #81c784; font-weight: bold; margin-left: 5px; }
         
-        .footer-note { text-align: center; font-size: 0.75em; color: #999; margin-top: 20px; border-top: 1px solid #f2f1ed; padding-top: 10px; }
+        .footer-note { text-align: center; font-size: 0.75em; color: #757575; margin-top: 20px; border-top: 1px solid #333; padding-top: 10px; }
+
+        /* Стили для ввода времени */
+        .time-inputs { background: #2a2a2a; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444; }
+        .time-inputs label { font-size: 0.85em; color: #bbb; display: block; margin-bottom: 5px; }
+        .time-inputs input { background: #1e1e1e; border: 1px solid #555; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.9em; margin-right: 10px; margin-bottom: 10px; }
+        .btn-calc { background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+        .btn-calc:hover { background: #2196f3; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Мой Трекер Питания</h1>
+        <h1>Трекер Питания</h1>
         
         <div class="alert">
-            <strong>⚠️ Памятка:</strong> Зеленый чай пейте за 1 час до или через 1 час после еды. Сон — 5.5 часов.
+            <strong>⚠️ Памятка:</strong> Зеленый чай пейте за 1 час до или через 1 час после еды. Сон — 5.5 часов в будни.
         </div>
 
-        <!-- Сетка с днями -->
         <div class="tracker-grid">
-            <div class="day-card" onclick="openModal('mon-tue')">Пн & Вт</div>
-            <div class="day-card" onclick="openModal('wed-thu')">Ср & Чт</div>
-            <div class="day-card full-width" onclick="openModal('fri')">Пятница (Разгрузка)</div>
-            <div class="day-card weekend full-width" onclick="openModal('weekend')">Суббота и Воскресенье</div>
+            <div class="day-card" onclick="openModal('mon')">ПН</div>
+            <div class="day-card" onclick="openModal('tue')">ВТ</div>
+            <div class="day-card" onclick="openModal('wed')">СР</div>
+            <div class="day-card" onclick="openModal('thu')">ЧТ</div>
+            <div class="day-card" onclick="openModal('fri')">ПТ</div>
+            <div class="day-card weekend" onclick="openModal('sat')">СБ</div>
+            <div class="day-card weekend" onclick="openModal('sun')">ВС</div>
         </div>
         
-        <div class="footer-note">Нажмите на день, чтобы увидеть график и список покупок для него.</div>
+        <div class="shopping-section">
+            <h4 id="shopping-title">Купить сегодня на завтра:</h4>
+            <div id="shopping-list-content"></div>
+        </div>
+
+        <div class="footer-note">Нажмите на день, чтобы увидеть график. На выходных можно задавать свое время.</div>
     </div>
 
-    <!-- Модальное окно -->
     <div id="myModal" class="modal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="close-btn" onclick="document.getElementById('myModal').style.display = 'none'">&times;</span>
@@ -71,137 +78,95 @@
     </div>
 
     <script>
-        // База данных для модалок (график + умный список покупок)
+        const weekdaySchedule = (mealItems, snackItems) => `
+            <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
+            <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
+            <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
+            <div class="schedule-item">
+                <span class="time">13:00</span> — <span class="meal">🥗 ОБЕД</span>
+                <ul>${mealItems.map(i => `<li>${i}</li>`).join('')}</ul>
+                <span class="supplement">💊 Пиколинат хрома</span>
+            </div>
+            <div class="schedule-item">
+                <span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС (в вузе)</span>
+                <ul>${snackItems.map(i => `<li>${i}</li>`).join('')}</ul>
+            </div>
+            <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
+            <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
+        `;
+
         const data = {
-            'mon-tue': `
-                <h3 class="modal-title">Понедельник & Вторник</h3>
-                <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
-                <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
-                <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
-                <div class="schedule-item">
-                    <span class="time">13:00</span> — <span class="meal">🥗 ОБЕД</span>
-                    <ul>
-                        <li>Гречка</li>
-                        <li>Фасоль «Маркет»</li>
-                        <li>Свежий огурец</li>
-                    </ul>
-                    <span class="supplement">💊 Пиколинат хрома (в процессе)</span>
-                </div>
-                <div class="schedule-item">
-                    <span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС (в вузе)</span>
-                    <ul>
-                        <li>30 г сырых орехов</li>
-                        <li>1 зеленое яблоко</li>
-                    </ul>
-                </div>
-                <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
-                <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
-
-                <div class="shopping-section">
-                    <h4>Что купить на эти дни:</h4>
-                    <div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» <span class="store-label">[Перекресток]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Свежие огурцы (2 шт.) <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Зеленые яблоки (2 шт.) <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (60 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
-                </div>
-            `,
-            'wed-thu': `
-                <h3 class="modal-title">Среда & Четверг</h3>
-                <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
-                <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
-                <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
-                <div class="schedule-item">
-                    <span class="time">13:00</span> — <span class="meal">🍛 ОБЕД</span>
-                    <ul>
-                        <li>Рис или гречка</li>
-                        <li>Стручковая фасоль</li>
-                        <li>Красная чечевица</li>
-                    </ul>
-                    <span class="supplement">💊 Пиколинат хрома (в процессе)</span>
-                </div>
-                <div class="schedule-item">
-                    <span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС (в вузе)</span>
-                    <ul>
-                        <li>30 г орехов</li>
-                        <li>1 зеленое яблоко + хлебцы</li>
-                    </ul>
-                </div>
-                <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
-                <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
-
-                <div class="shopping-section">
-                    <h4>Что купить на эти дни:</h4>
-                    <div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Зеленые яблоки (2 шт.) <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Цельнозерновые хлебцы <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (60 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
-                </div>
-            `,
-            'fri': `
-                <h3 class="modal-title">Пятница (Разгрузка)</h3>
-                <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
-                <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
-                <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
-                <div class="schedule-item">
-                    <span class="time">13:00</span> — <span class="meal">🥗 ОБЕД</span>
-                    <ul>
-                        <li>Пюре из красной чечевицы</li>
-                        <li>Свежий огурец</li>
-                    </ul>
-                    <span class="supplement">💊 Пиколинат хрома (в процессе)</span>
-                </div>
-                <div class="schedule-item">
-                    <span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС (в вузе)</span>
-                    <ul>
-                        <li>30 г орехов</li>
-                        <li>1 зеленое яблоко</li>
-                    </ul>
-                </div>
-                <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
-                <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
-
-                <div class="shopping-section">
-                    <h4>Что купить на этот день:</h4>
-                    <div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
-                </div>
-            `,
-            'weekend': `
-                <h3 class="modal-title">Суббота & Воскресенье</h3>
-                <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
-                <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
-                <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
-                <div class="schedule-item">
-                    <span class="time">13:00</span> — <span class="meal">🍛 ОБЕД</span>
-                    <ul>
-                        <li>Крупа на выбор</li>
-                        <li>Стручковая фасоль</li>
-                        <li>Чечевица или фасоль</li>
-                    </ul>
-                    <span class="supplement">💊 Пиколинат хрома (в процессе)</span>
-                </div>
-                <div class="schedule-item">
-                    <span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС</span>
-                    <ul>
-                        <li>30 г орехов</li>
-                        <li>1 яблоко</li>
-                    </ul>
-                </div>
-                <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
-                <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон</div>
-
-                <div class="shopping-section">
-                    <h4>Что купить на выходные:</h4>
-                    <div class="checklist-item"><input type="checkbox"><span>Зеленые яблоки (2 шт.) <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div>
-                    <div class="checklist-item"><input type="checkbox"><span>Сырые орехи (60 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>
-                </div>
-            `
+            'mon': `<h3 class="modal-title">Понедельник</h3>` + weekdaySchedule(['Гречка', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
+            'tue': `<h3 class="modal-title">Вторник</h3>` + weekdaySchedule(['Гречка', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
+            'wed': `<h3 class="modal-title">Среда</h3>` + weekdaySchedule(['Рис или гречка', 'Стручковая фасоль', 'Красная чечевица'], ['30 г орехов', '1 зеленое яблоко + хлебцы']),
+            'thu': `<h3 class="modal-title">Четверг</h3>` + weekdaySchedule(['Рис или гречка', 'Стручковая фасоль', 'Красная чечевица'], ['30 г орехов', '1 зеленое яблоко + хлебцы']),
+            'fri': `<h3 class="modal-title">Пятница (Разгрузка)</h3>` + weekdaySchedule(['Пюре из красной чечевицы', 'Свежий огурец'], ['30 г орехов', '1 зеленое яблоко']),
         };
 
+        const shoppingData = {
+            'mon-tue': `<div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» <span class="store-label">[Перекресток]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`,
+            'wed-thu': `<div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Цельнозерновые хлебцы <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`,
+            'fri': `<div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`,
+            'weekend': `<div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`
+        };
+
+        // Функция для прибавления минут к строке времени "HH:MM"
+        function addMinutes(timeStr, minsToAdd) {
+            let [hours, minutes] = timeStr.split(':').map(Number);
+            minutes += minsToAdd;
+            hours += Math.floor(minutes / 60);
+            minutes = minutes % 60;
+            hours = hours % 24;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        }
+
+        // Функция расчета графика для выходных
+        function calculateWeekend() {
+            const wakeUp = document.getElementById('wake-time').value;
+            const bedTime = document.getElementById('bed-time').value;
+
+            const lCarnTime = addMinutes(wakeUp, 5);
+            const workoutTime = addMinutes(wakeUp, 15);
+            const drainTime = addMinutes(wakeUp, 90);
+            const lunchTime = addMinutes(drainTime, 120);
+            const magnesiumTime = addMinutes(bedTime, -15);
+
+            document.getElementById('weekend-schedule').innerHTML = `
+                <div class="schedule-item"><span class="time">${lCarnTime}</span> — <span class="supplement">💊 L-carnitine</span></div>
+                <div class="schedule-item"><span class="time">${workoutTime}</span> — 🏃‍♀️ Разминка (20 мин)</div>
+                <div class="schedule-item"><span class="time">${drainTime}</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
+                <div class="schedule-item"><span class="time">${lunchTime}</span> — <span class="meal">🍛 ОБЕД</span>
+                    <ul><li>Крупа на выбор</li><li>Стручковая фасоль</li><li>Чечевица или фасоль</li></ul>
+                    <span class="supplement">💊 Пиколинат хрома</span>
+                </div>
+                <div class="schedule-item"><span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС</span>
+                    <ul><li>30 г орехов</li><li>1 яблоко</li></ul>
+                </div>
+                <div class="schedule-item"><span class="time">${magnesiumTime}</span> — <span class="supplement">💊 Магний хелат</span></div>
+                <div class="schedule-item"><span class="time">${bedTime}</span> — 😴 Сон</div>
+            `;
+        }
+
         function openModal(day) {
-            document.getElementById('modal-text').innerHTML = data[day];
+            if (day === 'sat' || day === 'sun') {
+                const dayName = day === 'sat' ? 'Суббота' : 'Воскресенье';
+                document.getElementById('modal-text').innerHTML = `
+                    <h3 class="modal-title">${dayName} (Конструктор дня)</h3>
+                    <div class="time-inputs">
+                        <label>Во сколько планируете проснуться?</label>
+                        <input type="time" id="wake-time" value="09:00">
+                        <label>Во сколько планируете лечь спать?</label>
+                        <input type="time" id="bed-time" value="23:00">
+                        <button class="btn-calc" onclick="calculateWeekend()">Рассчитать</button>
+                    </div>
+                    <div id="weekend-schedule">
+                        <p style="color:#aaa; font-size:0.9em;">Введите время выше и нажмите «Рассчитать».</p>
+                    </div>
+                `;
+                calculateWeekend(); // Первичный запуск со значениями по умолчанию
+            } else {
+                document.getElementById('modal-text').innerHTML = data[day];
+            }
             document.getElementById('myModal').style.display = 'flex';
         }
 
@@ -210,6 +175,23 @@
                 document.getElementById('myModal').style.display = 'none';
             }
         }
+
+        window.onload = function() {
+            const daysOfWeek = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+            const todayIndex = new Date().getDay();
+            const tomorrowIndex = (todayIndex + 1) % 7;
+            const tomorrowName = daysOfWeek[tomorrowIndex];
+            
+            document.getElementById('shopping-title').innerText = `Купить сегодня на завтра (${tomorrowName}):`;
+            
+            let listHTML = '';
+            if (tomorrowIndex === 1 || tomorrowIndex === 2) listHTML = shoppingData['mon-tue'];
+            else if (tomorrowIndex === 3 || tomorrowIndex === 4) listHTML = shoppingData['wed-thu'];
+            else if (tomorrowIndex === 5) listHTML = shoppingData['fri'];
+            else if (tomorrowIndex === 6 || tomorrowIndex === 0) listHTML = shoppingData['weekend'];
+            
+            document.getElementById('shopping-list-content').innerHTML = listHTML;
+        };
     </script>
 </body>
 </html>
