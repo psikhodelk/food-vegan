@@ -16,6 +16,16 @@
         .day-card.weekend { border-color: #1976d2; }
         .day-card.weekend:hover { border-color: #2196f3; }
         
+        .inventory-section { background: #1a252f; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #34495e; }
+        .inventory-section h4 { color: #ffffff; font-size: 1em; margin-top: 0; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #34495e; padding-bottom: 5px; }
+        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 0.9em; }
+        .inv-item { text-align: center; background: #2c3e50; padding: 8px; border-radius: 6px; position: relative; }
+        .inv-val { font-weight: bold; color: #1abc9c; display: block; font-size: 1.1em; }
+        
+        /* Кнопка сброса для каждого продукта */
+        .btn-reset-single { background: none; border: none; color: #7f8c8d; cursor: pointer; font-size: 1.1em; position: absolute; top: 2px; right: 2px; padding: 2px; }
+        .btn-reset-single:hover { color: #3498db; }
+
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background-color: #1e1e1e; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); position: relative; max-height: 85vh; overflow-y: auto; border: 1px solid #333; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #757575; cursor: pointer; }
@@ -34,14 +44,12 @@
         .checklist-item input { margin-right: 10px; transform: scale(1.1); cursor: pointer; }
         .store-label { font-size: 0.8em; color: #81c784; font-weight: bold; margin-left: 5px; }
         
-        .footer-note { text-align: center; font-size: 0.75em; color: #757575; margin-top: 20px; border-top: 1px solid #333; padding-top: 10px; }
-
-        /* Стили для ввода времени */
         .time-inputs { background: #2a2a2a; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444; }
         .time-inputs label { font-size: 0.85em; color: #bbb; display: block; margin-bottom: 5px; }
         .time-inputs input { background: #1e1e1e; border: 1px solid #555; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.9em; margin-right: 10px; margin-bottom: 10px; }
         .btn-calc { background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
-        .btn-calc:hover { background: #2196f3; }
+        
+        .footer-note { text-align: center; font-size: 0.75em; color: #757575; margin-top: 20px; border-top: 1px solid #333; padding-top: 10px; }
     </style>
 </head>
 <body>
@@ -50,6 +58,28 @@
         
         <div class="alert">
             <strong>⚠️ Памятка:</strong> Зеленый чай пейте за 1 час до или через 1 час после еды. Сон — 5.5 часов в будни.
+        </div>
+
+        <!-- Виджет складских запасов -->
+        <div class="inventory-section">
+            <h4>📦 Остатки сухих продуктов</h4>
+            <div class="inv-grid">
+                <div class="inv-item">
+                    <button class="btn-reset-single" onclick="resetSingle('rice')" title="Сбросить до 500г">🔄</button>
+                    <span class="inv-val" id="inv-rice">800г</span>
+                    <span>Рис Жасмин</span>
+                </div>
+                <div class="inv-item">
+                    <button class="btn-reset-single" onclick="resetSingle('buck')" title="Сбросить до 900г">🔄</button>
+                    <span class="inv-val" id="inv-buck">400г</span>
+                    <span>Гречка</span>
+                </div>
+                <div class="inv-item">
+                    <button class="btn-reset-single" onclick="resetSingle('lent')" title="Сбросить до 450г">🔄</button>
+                    <span class="inv-val" id="inv-lent">340г</span>
+                    <span>Чечевица</span>
+                </div>
+            </div>
         </div>
 
         <div class="tracker-grid">
@@ -67,7 +97,7 @@
             <div id="shopping-list-content"></div>
         </div>
 
-        <div class="footer-note">Нажмите на день, чтобы увидеть график. На выходных можно задавать свое время.</div>
+        <div class="footer-note">Нажатие на день списывает крупу. Стрелочка 🔄 обнуляет конкретный продукт до полной пачки!</div>
     </div>
 
     <div id="myModal" class="modal" onclick="closeModal(event)">
@@ -78,6 +108,38 @@
     </div>
 
     <script>
+        // Ваши текущие запасы
+        const currentInventory = { rice: 800, buck: 400, lent: 340 };
+        // Вес полных заводских упаковок
+        const fullInventory = { rice: 500, buck: 900, lent: 450 };
+
+        if (!localStorage.getItem('myMealInventory')) {
+            localStorage.setItem('myMealInventory', JSON.stringify(currentInventory));
+        }
+
+        function updateInventoryDisplay() {
+            const inv = JSON.parse(localStorage.getItem('myMealInventory'));
+            document.getElementById('inv-rice').innerText = inv.rice + 'г';
+            document.getElementById('inv-buck').innerText = inv.buck + 'г';
+            document.getElementById('inv-lent').innerText = inv.lent + 'г';
+            updateShoppingList();
+        }
+
+        function useStock(item, amount) {
+            const inv = JSON.parse(localStorage.getItem('myMealInventory'));
+            if (inv[item] >= amount) inv[item] -= amount;
+            else inv[item] = 0;
+            localStorage.setItem('myMealInventory', JSON.stringify(inv));
+            updateInventoryDisplay();
+        }
+
+        function resetSingle(item) {
+            const inv = JSON.parse(localStorage.getItem('myMealInventory'));
+            inv[item] = fullInventory[item];
+            localStorage.setItem('myMealInventory', JSON.stringify(inv));
+            updateInventoryDisplay();
+        }
+
         const weekdaySchedule = (mealItems, snackItems) => `
             <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
             <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
@@ -96,21 +158,13 @@
         `;
 
         const data = {
-            'mon': `<h3 class="modal-title">Понедельник</h3>` + weekdaySchedule(['Гречка', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
-            'tue': `<h3 class="modal-title">Вторник</h3>` + weekdaySchedule(['Гречка', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
-            'wed': `<h3 class="modal-title">Среда</h3>` + weekdaySchedule(['Рис или гречка', 'Стручковая фасоль', 'Красная чечевица'], ['30 г орехов', '1 зеленое яблоко + хлебцы']),
-            'thu': `<h3 class="modal-title">Четверг</h3>` + weekdaySchedule(['Рис или гречка', 'Стручковая фасоль', 'Красная чечевица'], ['30 г орехов', '1 зеленое яблоко + хлебцы']),
-            'fri': `<h3 class="modal-title">Пятница (Разгрузка)</h3>` + weekdaySchedule(['Пюре из красной чечевицы', 'Свежий огурец'], ['30 г орехов', '1 зеленое яблоко']),
+            'mon': `<h3 class="modal-title">Понедельник</h3>` + weekdaySchedule(['Гречка (списано 50г сухого продукта)', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
+            'tue': `<h3 class="modal-title">Вторник</h3>` + weekdaySchedule(['Гречка (списано 50г сухого продукта)', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
+            'wed': `<h3 class="modal-title">Среда</h3>` + weekdaySchedule(['Рис (списано 50г сухого продукта)', 'Стручковая фасоль', 'Красная чечевица (списано 50г сухого продукта)'], ['30 г орехов', '1 зеленое яблоко']),
+            'thu': `<h3 class="modal-title">Четверг</h3>` + weekdaySchedule(['Рис (списано 50г сухого продукта)', 'Стручковая фасоль', 'Красная чечевица (списано 50г сухого продукта)'], ['30 г орехов', '1 зеленое яблоко']),
+            'fri': `<h3 class="modal-title">Пятница (Разгрузка)</h3>` + weekdaySchedule(['Пюре из чечевицы (списано 70г сухого продукта)', 'Свежий огурец'], ['30 г орехов', '1 зеленое яблоко']),
         };
 
-        const shoppingData = {
-            'mon-tue': `<div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» <span class="store-label">[Перекресток]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`,
-            'wed-thu': `<div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Цельнозерновые хлебцы <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`,
-            'fri': `<div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`,
-            'weekend': `<div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`
-        };
-
-        // Функция для прибавления минут к строке времени "HH:MM"
         function addMinutes(timeStr, minsToAdd) {
             let [hours, minutes] = timeStr.split(':').map(Number);
             minutes += minsToAdd;
@@ -120,10 +174,16 @@
             return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
         }
 
-        // Функция расчета графика для выходных
         function calculateWeekend() {
             const wakeUp = document.getElementById('wake-time').value;
             const bedTime = document.getElementById('bed-time').value;
+
+            let [wakeH, wakeM] = wakeUp.split(':').map(Number);
+            let [bedH, bedM] = bedTime.split(':').map(Number);
+            let diffMins = (wakeH * 60 + wakeM) - (bedH * 60 + bedM);
+            if (diffMins <= 0) diffMins += 24 * 60;
+            let sleepHours = Math.floor(diffMins / 60);
+            let sleepMins = diffMins % 60;
 
             const lCarnTime = addMinutes(wakeUp, 5);
             const workoutTime = addMinutes(wakeUp, 15);
@@ -132,11 +192,12 @@
             const magnesiumTime = addMinutes(bedTime, -15);
 
             document.getElementById('weekend-schedule').innerHTML = `
+                <div style="font-size:0.85em; color:#a3b19b; margin-bottom:10px;">Продолжительность сна: <b>${sleepHours}ч ${sleepMins}мин</b></div>
                 <div class="schedule-item"><span class="time">${lCarnTime}</span> — <span class="supplement">💊 L-carnitine</span></div>
                 <div class="schedule-item"><span class="time">${workoutTime}</span> — 🏃‍♀️ Разминка (20 мин)</div>
                 <div class="schedule-item"><span class="time">${drainTime}</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
-                <div class="schedule-item"><span class="time">${lunchTime}</span> — <span class="meal">🍛 ОБЕД</span>
-                    <ul><li>Крупа на выбор</li><li>Стручковая фасоль</li><li>Чечевица или фасоль</li></ul>
+                <div class="schedule-item"><span class="time">${lunchTime}</span> — <span class="meal">🍛 ОБЕД (списано 50г риса + 50г чечевицы)</span>
+                    <ul><li>Рис «Жасмин»</li><li>Чечевица «Зеленая линия»</li><li>Стручковая фасоль</li></ul>
                     <span class="supplement">💊 Пиколинат хрома</span>
                 </div>
                 <div class="schedule-item"><span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС</span>
@@ -148,22 +209,25 @@
         }
 
         function openModal(day) {
+            if (day === 'mon' || day === 'tue') useStock('buck', 50);
+            if (day === 'wed' || day === 'thu') { useStock('rice', 50); useStock('lent', 50); }
+            if (day === 'fri') useStock('lent', 70);
+            if (day === 'sat' || day === 'sun') { useStock('rice', 50); useStock('lent', 50); }
+
             if (day === 'sat' || day === 'sun') {
                 const dayName = day === 'sat' ? 'Суббота' : 'Воскресенье';
                 document.getElementById('modal-text').innerHTML = `
                     <h3 class="modal-title">${dayName} (Конструктор дня)</h3>
                     <div class="time-inputs">
-                        <label>Во сколько планируете проснуться?</label>
+                        <label>Время пробуждения:</label>
                         <input type="time" id="wake-time" value="09:00">
-                        <label>Во сколько планируете лечь спать?</label>
+                        <label>Время сна:</label>
                         <input type="time" id="bed-time" value="23:00">
                         <button class="btn-calc" onclick="calculateWeekend()">Рассчитать</button>
                     </div>
-                    <div id="weekend-schedule">
-                        <p style="color:#aaa; font-size:0.9em;">Введите время выше и нажмите «Рассчитать».</p>
-                    </div>
+                    <div id="weekend-schedule"></div>
                 `;
-                calculateWeekend(); // Первичный запуск со значениями по умолчанию
+                calculateWeekend();
             } else {
                 document.getElementById('modal-text').innerHTML = data[day];
             }
@@ -176,7 +240,7 @@
             }
         }
 
-        window.onload = function() {
+        function updateShoppingList() {
             const daysOfWeek = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
             const todayIndex = new Date().getDay();
             const tomorrowIndex = (todayIndex + 1) % 7;
@@ -184,13 +248,29 @@
             
             document.getElementById('shopping-title').innerText = `Купить сегодня на завтра (${tomorrowName}):`;
             
-            let listHTML = '';
-            if (tomorrowIndex === 1 || tomorrowIndex === 2) listHTML = shoppingData['mon-tue'];
-            else if (tomorrowIndex === 3 || tomorrowIndex === 4) listHTML = shoppingData['wed-thu'];
-            else if (tomorrowIndex === 5) listHTML = shoppingData['fri'];
-            else if (tomorrowIndex === 6 || tomorrowIndex === 0) listHTML = shoppingData['weekend'];
+            const inv = JSON.parse(localStorage.getItem('myMealInventory'));
+            let dynamicItems = '';
             
-            document.getElementById('shopping-list-content').innerHTML = listHTML;
+            if (inv.buck <= 100) dynamicItems += `<div class="checklist-item"><input type="checkbox"><span>🔥 Гречка (осталось мало!) <span class="store-label">[Перекресток/Лента]</span></span></div>`;
+            if (inv.rice <= 100) dynamicItems += `<div class="checklist-item"><input type="checkbox"><span>🔥 Рис Жасмин (осталось мало!) <span class="store-label">[Перекресток/Лента]</span></span></div>`;
+            if (inv.lent <= 100) dynamicItems += `<div class="checklist-item"><input type="checkbox"><span>🔥 Красная чечевица (осталось мало!) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
+
+            let staticItems = '';
+            if (tomorrowIndex === 1 || tomorrowIndex === 2) {
+                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» <span class="store-label">[Перекресток]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
+            } else if (tomorrowIndex === 3 || tomorrowIndex === 4) {
+                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
+            } else if (tomorrowIndex === 5) {
+                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
+            } else if (tomorrowIndex === 6 || tomorrowIndex === 0) {
+                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
+            }
+
+            document.getElementById('shopping-list-content').innerHTML = dynamicItems + staticItems;
+        }
+
+        window.onload = function() {
+            updateInventoryDisplay();
         };
     </script>
 </body>
