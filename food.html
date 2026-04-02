@@ -3,91 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>План Питания и Тренировок</title>
+    <title>Мой План Питания и Тренировок</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 16px; display: none; }
-        h1 { text-align: center; color: #ffffff; font-size: 1.5em; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; }
-        .today-banner { background: #1c2e20; border: 1px solid #2e7d32; padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 20px; color: #81c784; font-weight: bold; }
-        .menu-grid { display: grid; gap: 15px; }
-        .menu-btn { background: #2a2a2a; color: #fff; padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid #3a3a3a; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; }
+        h1 { text-align: center; color: #ffffff; font-size: 1.5em; border-bottom: 2px solid #2e7d32; padding-bottom: 12px; margin-bottom: 20px; letter-spacing: 0.5px; }
+        
+        /* Виджет сегодняшнего дня */
+        .today-banner { background: #1c2e20; border: 1px solid #2e7d32; padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 20px; color: #81c784; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        /* Главное меню */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .menu-btn { background: #2a2a2a; color: #ffffff; padding: 20px; border-radius: 12px; text-align: center; font-size: 1em; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s; border: 1px solid #3a3a3a; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .menu-btn:hover { transform: translateY(-3px); background-color: #333333; border-color: #2e7d32; }
+        
+        /* Переключение разделов */
         .section-content { display: none; }
         .section-content.active { display: block; }
-        .day-card { background: #2a2a2a; color: #fff; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid #3a3a3a; }
-        .day-card.today { border: 2px solid #81c784; background-color: #1c2e20; }
-        .tracker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
-        .modal-content { background-color: #1e1e1e; padding: 20px; border-radius: 16px; width: 90%; max-width: 450px; max-height: 80vh; overflow-y: auto; }
-        .close-btn { color: #aaa; float: right; font-size: 28px; cursor: pointer; }
-        #auth-screen { text-align: center; margin-top: 100px; }
-        input, button { padding: 10px; margin: 10px; border-radius: 5px; border: 1px solid #444; }
-        button { background: #2e7d32; color: white; cursor: pointer; }
+        
+        .back-to-menu { background: #333; color: #ccc; border: 1px solid #444; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9em; margin-bottom: 15px; width: 100%; font-weight: bold; }
+        .back-to-menu:hover { background: #444; color: #fff; }
+
+        /* Сетка трекера */
+        .tracker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .day-card { background: #2a2a2a; color: #ffffff; padding: 15px 5px; border-radius: 10px; text-align: center; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #3a3a3a; }
+        .day-card:hover { transform: translateY(-3px); background-color: #333333; border-color: #2e7d32; }
+        .day-card.weekend { border-color: #1976d2; }
+        .day-card.today { border: 2px solid #81c784; box-shadow: 0 0 10px rgba(129, 199, 132, 0.3); background: #1c2e20; }
+
+        /* Всплывающее окно */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1e1e1e; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); position: relative; max-height: 85vh; overflow-y: auto; border: 1px solid #333; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #757575; cursor: pointer; }
+        .close-btn:hover { color: #ffffff; }
+        
+        .modal-title { color: #ffffff; font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
+        .schedule-item { margin-bottom: 12px; border-left: 3px solid #2e7d32; padding-left: 10px; }
+        .time { font-weight: 600; color: #81c784; font-size: 0.95em; }
+        .meal { font-weight: bold; color: #4caf50; }
+        .supplement { color: #ba68c8; font-weight: bold; }
+        ul { padding-left: 18px; margin: 4px 0; font-size: 0.9em; color: #b0b0b0; }
+
+        /* Стили для блока тренировок */
+        .workout-item { background: #252525; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #2196f3; }
+        .workout-title { font-weight: bold; color: #ffffff; margin-bottom: 5px; }
+        .workout-desc { font-size: 0.85em; color: #aaa; }
+        .timer-info { background: #1c2e20; border-left: 4px solid #81c784; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 0.85em; color: #a5d6a7; }
+
+        /* Стили экрана входа */
+        #auth-screen { max-width: 400px; margin: 100px auto; background: #1e1e1e; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; }
+        #auth-screen h2 { color: #ffffff; margin-top: 0; margin-bottom: 15px; }
+        #auth-screen input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background: #121212; color: #fff; font-size: 1em; margin-bottom: 15px; box-sizing: border-box; text-align: center; }
+        #auth-screen button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2e7d32; color: #fff; font-size: 1em; cursor: pointer; font-weight: bold; }
+        #auth-screen button:hover { background: #388e3c; }
     </style>
 </head>
 <body>
+
+    <!-- Экран входа -->
     <div id="auth-screen">
         <h2>Введите код доступа</h2>
-        <input type="password" id="access-code" placeholder="Пароль">
+        <input type="password" id="access-code" placeholder="Введите пароль">
         <button onclick="checkAuth()">Войти</button>
+        <p id="error-msg" style="color: #e53935; font-size: 0.85em; margin-top: 10px; display: none;">Неверный код доступа</p>
     </div>
+
+    <!-- Основной контейнер -->
     <div class="container" id="main-app">
+        
+        <!-- ГЛАВНОЕ ОКНО -->
         <div id="main-menu">
-            <h1>Мой План</h1>
+            <h1>Мой План (Цель: 45 кг)</h1>
+            
             <div id="current-day-banner" class="today-banner"></div>
+            
             <div class="menu-grid">
                 <div class="menu-btn" onclick="showSection('nutrition-sec')">🍎 План Питания</div>
+                <div class="menu-btn" onclick="showSection('workout-sec')">💪 Тренировки</div>
             </div>
         </div>
+
+        <!-- РАЗДЕЛ ПИТАНИЯ -->
         <div id="nutrition-sec" class="section-content">
-            <button onclick="showMainMenu()">Назад</button>
+            <button class="back-to-menu" onclick="showMainMenu()">⬅ Назад в меню</button>
+            <h1>Трекер Питания</h1>
+            
             <div class="tracker-grid">
                 <div class="day-card" id="day-1" onclick="openModal('mon')">ПН</div>
                 <div class="day-card" id="day-2" onclick="openModal('tue')">ВТ</div>
                 <div class="day-card" id="day-3" onclick="openModal('wed')">СР</div>
                 <div class="day-card" id="day-4" onclick="openModal('thu')">ЧТ</div>
                 <div class="day-card" id="day-5" onclick="openModal('fri')">ПТ</div>
-                <div class="day-card" id="day-6" onclick="openModal('sat')">СБ</div>
-                <div class="day-card" id="day-7" onclick="openModal('sun')">ВС</div>
+                <div class="day-card weekend" id="day-6" onclick="openModal('sat')">СБ</div>
+                <div class="day-card weekend" id="day-7" onclick="openModal('sun')">ВС</div>
             </div>
         </div>
+
+        <!-- РАЗДЕЛ ТРЕНИРОВКИ -->
+        <div id="workout-sec" class="section-content">
+            <button class="back-to-menu" onclick="showMainMenu()">⬅ Назад в меню</button>
+            <h1>Утренняя Тренировка</h1>
+            
+            <div class="timer-info">
+                <strong>Режим:</strong> 40 секунд работа / 20 секунд отдых. 3-4 круга.<br>
+                Принимайте 60 мл L-carnitine перед началом тренировки.
+            </div>
+
+            <div class="workout-item">
+                <div class="workout-title">1. Отжимания с колен (широкая постановка)</div>
+                <div class="workout-desc">Убирает мешочки у подмышек. На вдохе вниз, на выдохе мощно вверх.</div>
+            </div>
+            <div class="workout-item">
+                <div class="workout-title">2. Приседания (узкая и широкая стойка)</div>
+                <div class="workout-desc">Чередуйте шаги. Подтягивает ляжки и ягодицы.</div>
+            </div>
+            <div class="workout-item">
+                <div class="workout-title">3. Обратные отжимания от стула</div>
+                <div class="workout-desc">Изолирует заднюю часть плеча (трицепс). Локти строго назад!</div>
+            </div>
+            <div class="workout-item">
+                <div class="workout-title">4. Ягодичный мостик</div>
+                <div class="workout-desc">Прорабатывает заднюю поверхность бедра. Сжимайте мышцы наверху.</div>
+            </div>
+            <div class="workout-item">
+                <div class="workout-title">5. Скалолаз в планке</div>
+                <div class="workout-desc">Динамический бег в упоре лежа. Идеальное кардио для живота.</div>
+            </div>
+            <div class="workout-item">
+                <div class="workout-title">6. Упражнение «Велосипед»</div>
+                <div class="workout-desc">Скручивания на пресс. Локоть тянется к противоположному колену.</div>
+            </div>
+        </div>
+        
     </div>
-    <div id="myModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal()">&times;</span><div id="modal-data"></div></div></div>
+
+    <!-- Модальное окно -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-data"></div>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
     <script>
         function checkAuth() {
-            if (document.getElementById('access-code').value === 'Ника Титова') {
+            const code = document.getElementById('access-code').value;
+            if (code === 'Ника Титова') {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
                 updateCurrentDay();
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
             }
         }
+
         function updateCurrentDay() {
             const now = new Date();
             const dayIndex = now.getDay();
             const dateStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-            const dayNamesRu = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-            document.getElementById('current-day-banner').innerText = `Сегодня: ${dayNamesRu[dayIndex]}, ${dateStr}`;
+            const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+            
+            document.getElementById('current-day-banner').innerText = `Сегодня: ${dayNames[dayIndex]}, ${dateStr}`;
+            
             let calendarId = dayIndex === 0 ? 7 : dayIndex;
-            document.getElementById(`day-${calendarId}`).classList.add('today');
+            const todayCard = document.getElementById(`day-${calendarId}`);
+            if(todayCard) todayCard.classList.add('today');
         }
-        function showSection(id) {
+
+        function showSection(sectionId) {
             document.getElementById('main-menu').style.display = 'none';
-            document.getElementById(id).style.display = 'block';
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
         }
+
         function showMainMenu() {
-            document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
             document.getElementById('main-menu').style.display = 'block';
         }
-        const schedules = {
-            mon: '05:30 Подъем, 05:40 L-carnitine, 07:20 Завтрак (овсянка), 13:00 Обед (гречка), 22:30 Ужин (тофу), 23:30 Магний.',
-            tue: '05:30 Подъем, 05:40 L-carnitine, 07:20 Завтрак (овсянка), 13:00 Обед (рис), 22:30 Ужин (салат), 23:30 Магний.',
-            // ... (аналогично для остальных дней)
-            sun: 'Отдых и подготовка мультиварки.'
+
+        // База данных расписания и препаратов
+        const dayData = {
+            work: `
+                <div class="schedule-item"><span class="time">05:30</span> — Подъем</div>
+                <div class="schedule-item"><span class="supplement">💊 05:40</span> — L-carnitine 60 мл</div>
+                <div class="schedule-item"><span class="time">05:45</span> — Утренняя разминка (30 мин)</div>
+                <div class="schedule-item"><span class="supplement">💊 06:55</span> — Прием Drain</div>
+                <div class="schedule-item"><span class="time">08:15</span> — Выход (23 мин пешком от метро)</div>
+                <div class="schedule-item"><span class="time">09:00 - 17:00</span> — Работа</div>
+                <div class="schedule-item"><span class="meal">🍽️ 13:00</span> — Обед (Мультиварка)
+                    <ul>
+                        <li>Гречка/Рис с чечевицей или фасолью</li>
+                        <li>Овощной салат</li>
+                        <li><span class="supplement">💊 После еды:</span> Пиколинат хрома</li>
+                    </ul>
+                </div>
+                <div class="schedule-item"><span class="time">18:50 - 22:00</span> — Учеба</div>
+                <div class="schedule-item"><span class="meal">🍽️ 22:30</span> — Легкий ужин (Тофу или протеин)</div>
+                <div class="schedule-item"><span class="supplement">💊 23:30</span> — 2 таб. Магния хелата</div>
+                <div class="schedule-item"><span class="time">00:00</span> — Сон (5.5 часов)</div>
+            `,
+            weekend: `
+                <div class="schedule-item"><span class="time">08:00</span> — Подъем в выходной</div>
+                <div class="schedule-item"><span class="supplement">💊 08:15</span> — L-carnitine + Разминка</div>
+                <div class="schedule-item"><span class="meal">🍽️ 13:00</span> — Обед (Гарнир из мультиварки + овощи)</div>
+                <div class="schedule-item"><span class="supplement">💊 23:30</span> — Магний хелат перед сном</div>
+            `
         };
+
         function openModal(day) {
             document.getElementById('myModal').style.display = 'flex';
-            document.getElementById('modal-data').innerText = schedules[day] || 'План на этот день...';
+            let title = '';
+            let content = '';
+            
+            if (['mon','tue','wed','thu','fri'].includes(day)) {
+                title = 'Будний день (Работа + Учеба)';
+                content = dayData.work;
+            } else {
+                title = 'Выходной день';
+                content = dayData.weekend;
+            }
+            
+            document.getElementById('modal-data').innerHTML = `<h2 class="modal-title">${title}</h2>${content}`;
         }
-        function closeModal() { document.getElementById('myModal').style.display = 'none'; }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     </script>
+
 </body>
 </html>
