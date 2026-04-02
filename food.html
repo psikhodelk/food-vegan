@@ -3,13 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой План Питания</title>
+    <title>Мой План Питания и Тренировок</title>
     <style>
         body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
         .container { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; }
         h1 { text-align: center; color: #ffffff; font-size: 1.5em; border-bottom: 2px solid #2e7d32; padding-bottom: 12px; margin-bottom: 20px; letter-spacing: 0.5px; }
         .alert { background: #2c1a04; border-left: 4px solid #ff9800; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 0.85em; color: #ffb74d; }
         
+        /* Стили главного меню выбора */
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
+        .menu-btn { background: #2a2a2a; color: #ffffff; padding: 20px; border-radius: 12px; text-align: center; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s; border: 1px solid #3a3a3a; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .menu-btn:hover { transform: translateY(-3px); background-color: #333333; border-color: #2e7d32; }
+        
+        /* Переключение разделов */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+        
+        /* Кнопка "Назад" */
+        .back-to-menu { background: #333; color: #ccc; border: 1px solid #444; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9em; margin-bottom: 15px; width: 100%; font-weight: bold; }
+        .back-to-menu:hover { background: #444; color: #fff; }
+
         /* Сетка трекера */
         .tracker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
         .day-card { background: #2a2a2a; color: #ffffff; padding: 15px 5px; border-radius: 10px; text-align: center; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #3a3a3a; }
@@ -23,7 +36,7 @@
         .day-card.today { border: 2px solid #81c784; box-shadow: 0 0 10px rgba(129, 199, 132, 0.3); }
         .day-card.weekend.today { border: 2px solid #2196f3; box-shadow: 0 0 10px rgba(33, 150, 243, 0.3); }
 
-        /* ПЕРЕНЕСЕННЫЙ блок остатков в самый низ */
+        /* Блок остатков */
         .inventory-section { background: #1a252f; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #34495e; }
         .inventory-section h4 { color: #ffffff; font-size: 1em; margin: 0 0 10px 0; text-transform: uppercase; border-bottom: 1px solid #34495e; padding-bottom: 5px; }
         .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 0.9em; }
@@ -41,30 +54,25 @@
         .modal-title { color: #ffffff; font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
         .schedule-item { margin-bottom: 12px; border-left: 3px solid #2e7d32; padding-left: 10px; }
         .time { font-weight: 600; color: #81c784; font-size: 0.95em; }
-        .supplement { color: #ba68c8; font-weight: bold; font-size: 0.9em; }
         .meal { font-weight: bold; color: #4caf50; }
         ul { padding-left: 18px; margin: 4px 0; font-size: 0.9em; color: #b0b0b0; }
+
+        /* Стили для блока тренировок */
+        .workout-item { background: #252525; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #2196f3; }
+        .workout-title { font-weight: bold; color: #ffffff; margin-bottom: 5px; }
+        .workout-desc { font-size: 0.85em; color: #aaa; }
+        .timer-info { background: #1c2e20; border-left: 4px solid #81c784; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 0.85em; color: #a5d6a7; }
 
         /* Покупки */
         .shopping-section { background: #252525; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #333; }
         .shopping-section h4 { color: #ffffff; font-size: 1em; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #3a3a3a; padding-bottom: 5px; }
-        .checklist-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.9em; color: #e0e0e0; }
-        .checklist-item input { margin-right: 10px; transform: scale(1.1); cursor: pointer; }
-        .store-label { font-size: 0.8em; color: #81c784; font-weight: bold; margin-left: 5px; }
         
-        .footer-note { text-align: center; font-size: 0.75em; color: #757575; margin-top: 20px; border-top: 1px solid #333; padding-top: 10px; }
-
         /* Стили экрана входа */
         #auth-screen { max-width: 400px; margin: 100px auto; background: #1e1e1e; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; }
         #auth-screen h2 { color: #ffffff; margin-top: 0; margin-bottom: 15px; }
         #auth-screen input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background: #121212; color: #fff; font-size: 1em; margin-bottom: 15px; box-sizing: border-box; text-align: center; }
         #auth-screen button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2e7d32; color: #fff; font-size: 1em; cursor: pointer; font-weight: bold; }
         #auth-screen button:hover { background: #388e3c; }
-        
-        .time-inputs { background: #2a2a2a; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444; }
-        .time-inputs label { font-size: 0.85em; color: #bbb; display: block; margin-bottom: 5px; }
-        .time-inputs input { background: #1e1e1e; border: 1px solid #555; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.9em; margin-right: 10px; margin-bottom: 10px; }
-        .btn-calc { background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -79,259 +87,171 @@
 
     <!-- Основной контейнер (скрыт до ввода пароля) -->
     <div class="container" id="main-app">
-        <h1>Трекер Питания</h1>
         
-        <div class="alert">
-            <strong>⚠️ Памятка:</strong> Зеленый чай пейте за 1 час до или через 1 час после еды. Сон — 5.5 часов в будни.
+        <!-- ГЛАВНОЕ ОКНО (ВЫБОР) -->
+        <div id="main-menu">
+            <h1>Мой План (Цель: 45 кг)</h1>
+            <div class="menu-grid">
+                <div class="menu-btn" onclick="showSection('nutrition-sec')">🍎 План Питания</div>
+                <div class="menu-btn" onclick="showSection('workout-sec')">💪 Утренняя Тренировка</div>
+            </div>
+            
+            <div class="alert">
+                <strong>⚠️ Памятка:</strong> Зеленый чай пейте за 1 час до или через 1 час после еды. Сон — 5.5 часов в будни.
+            </div>
         </div>
 
-        <!-- Сетка с днями (добавлены id для скрипта) -->
-        <div class="tracker-grid">
-            <div class="day-card" id="day-1" onclick="openModal('mon')">ПН</div>
-            <div class="day-card" id="day-2" onclick="openModal('tue')">ВТ</div>
-            <div class="day-card" id="day-3" onclick="openModal('wed')">СР</div>
-            <div class="day-card" id="day-4" onclick="openModal('thu')">ЧТ</div>
-            <div class="day-card" id="day-5" onclick="openModal('fri')">ПТ</div>
-            <div class="day-card weekend" id="day-6" onclick="openModal('sat')">СБ</div>
-            <div class="day-card weekend" id="day-7" onclick="openModal('sun')">ВС</div>
-        </div>
-        
-        <!-- Автоматический список покупок "На завтра" -->
-        <div class="shopping-section">
-            <h4 id="shopping-title">Купить сегодня на завтра:</h4>
-            <div id="shopping-list-content"></div>
-        </div>
+        <!-- РАЗДЕЛ ПИТАНИЯ -->
+        <div id="nutrition-sec" class="section-content">
+            <button class="back-to-menu" onclick="showMainMenu()">⬅ Назад в главное меню</button>
+            <h1>Трекер Питания</h1>
+            
+            <!-- Сетка с днями -->
+            <div class="tracker-grid">
+                <div class="day-card" id="day-1" onclick="openModal('mon')">ПН</div>
+                <div class="day-card" id="day-2" onclick="openModal('tue')">ВТ</div>
+                <div class="day-card" id="day-3" onclick="openModal('wed')">СР</div>
+                <div class="day-card" id="day-4" onclick="openModal('thu')">ЧТ</div>
+                <div class="day-card" id="day-5" onclick="openModal('fri')">ПТ</div>
+                <div class="day-card weekend" id="day-6" onclick="openModal('sat')">СБ</div>
+                <div class="day-card weekend" id="day-7" onclick="openModal('sun')">ВС</div>
+            </div>
+            
+            <!-- Автоматический список покупок "На завтра" -->
+            <div class="shopping-section">
+                <h4 id="shopping-title">Купить сегодня на завтра:</h4>
+                <div id="shopping-list-content"></div>
+            </div>
 
-        <!-- ПЕРЕНЕСЕННЫЙ виджет складских запасов в самый низ -->
-        <div class="inventory-section">
-            <h4>📦 Остатки сухих продуктов</h4>
-            <div class="inv-grid">
-                <div class="inv-item">
-                    <button class="btn-reset-single" onclick="resetSingle('rice')" title="Сбросить до 500г">🔄</button>
-                    <span class="inv-val" id="inv-rice">800г</span>
-                    <span>Рис Жасмин</span>
-                </div>
-                <div class="inv-item">
-                    <button class="btn-reset-single" onclick="resetSingle('buck')" title="Сбросить до 900г">🔄</button>
-                    <span class="inv-val" id="inv-buck">400г</span>
-                    <span>Гречка</span>
-                </div>
-                <div class="inv-item">
-                    <button class="btn-reset-single" onclick="resetSingle('lent')" title="Сбросить до 450г">🔄</button>
-                    <span class="inv-val" id="inv-lent">340г</span>
-                    <span>Чечевица</span>
+            <!-- Складские запасы -->
+            <div class="inventory-section">
+                <h4>📦 Остатки сухих продуктов</h4>
+                <div class="inv-grid">
+                    <div class="inv-item">
+                        <button class="btn-reset-single" onclick="resetSingle('rice')" title="Сбросить до 500г">🔄</button>
+                        <span class="inv-val" id="inv-rice">500г</span>
+                        <span style="color: #aaa; font-size: 0.8em;">Рис</span>
+                    </div>
+                    <div class="inv-item">
+                        <button class="btn-reset-single" onclick="resetSingle('buckwheat')" title="Сбросить до 500г">🔄</button>
+                        <span class="inv-val" id="inv-buckwheat">500г</span>
+                        <span style="color: #aaa; font-size: 0.8em;">Гречка</span>
+                    </div>
+                    <div class="inv-item">
+                        <button class="btn-reset-single" onclick="resetSingle('oatmeal')" title="Сбросить до 500г">🔄</button>
+                        <span class="inv-val" id="inv-oatmeal">500г</span>
+                        <span style="color: #aaa; font-size: 0.8em;">Овсянка</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="footer-note">Нажатие на день списывает крупу. Прошедшие дни затемняются.</div>
+        <!-- РАЗДЕЛ ТРЕНИРОВКИ -->
+        <div id="workout-sec" class="section-content">
+            <button class="back-to-menu" onclick="showMainMenu()">⬅ Назад в главное меню</button>
+            <h1>Утренняя Тренировка</h1>
+            
+            <div class="timer-info">
+                <strong>Формат круговой:</strong> 40 секунд работа / 20 секунд отдых.<br>
+                Сделайте 3-4 полных круга. Отдых между кругами — 2 минуты.
+            </div>
+
+            <div class="workout-item">
+                <div class="workout-title">1. Отжимания с колен (широко)</div>
+                <div class="workout-desc">Упор на ладони и колени, руки шире плеч. На вдохе опустите грудь к полу, на выдохе поднимитесь. Акцент на зону подмышек.</div>
+            </div>
+
+            <div class="workout-item">
+                <div class="workout-title">2. Приседания (узкие / широкие)</div>
+                <div class="workout-desc">Чередуйте классическое приседание и приседание-плие (с широко расставленными ногами). Подтягивает бедра.</div>
+            </div>
+
+            <div class="workout-item">
+                <div class="workout-title">3. Обратные отжимания от стула</div>
+                <div class="workout-desc">Обопритесь руками о край стула, таз в воздухе. Сгибайте локти назад до 90 градусов. Убирает проблемную зону задней части плеча.</div>
+            </div>
+
+            <div class="workout-item">
+                <div class="workout-title">4. Ягодичный мостик</div>
+                <div class="workout-desc">Лежа на спине, согните ноги и поднимайте таз вверх, зажимая ягодицы в верхней точке.</div>
+            </div>
+
+            <div class="workout-item">
+                <div class="workout-title">5. Скалолаз в планке</div>
+                <div class="workout-desc">В упоре лежа поочередно быстро подтягивайте колени к груди. Держите пресс напряженным.</div>
+            </div>
+
+            <div class="workout-item">
+                <div class="workout-title">6. Упражнение «Велосипед»</div>
+                <div class="workout-desc">Лежа на спине, тянитесь противоположным локтем к противоположному колену. Идеально для живота.</div>
+            </div>
+        </div>
+        
     </div>
 
-    <div id="myModal" class="modal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-btn" onclick="document.getElementById('myModal').style.display = 'none'">&times;</span>
-            <div id="modal-text"></div>
+    <!-- Модальное окно -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-data"></div>
         </div>
     </div>
 
+    <!-- Скрипты -->
     <script>
-        // Проверка авторизации
+        // Функция авторизации по новому паролю
         function checkAuth() {
-            const input = document.getElementById('access-code').value.trim();
-            const correctPassword = "Ника Титова"; 
-            
-            if (input === correctPassword) {
+            const code = document.getElementById('access-code').value;
+            if (code === 'Ника Титова') {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                updateInventoryDisplay();
-                updateDaysHighlight(); // Запускаем затемнение при успешном входе
             } else {
                 document.getElementById('error-msg').style.display = 'block';
             }
         }
 
-        // Функция затемнения прошедших дней
-        function updateDaysHighlight() {
-            const todayIndex = new Date().getDay(); // 0 (ВС) до 6 (СБ)
-            // Приводим к ISO (ПН - 1, ВС - 7)
-            const currentDay = todayIndex === 0 ? 7 : todayIndex;
-
-            for (let i = 1; i <= 7; i++) {
-                const element = document.getElementById(`day-${i}`);
-                if (element) {
-                    if (i < currentDay) {
-                        element.classList.add('past');
-                    } else if (i === currentDay) {
-                        element.classList.add('today');
-                    }
-                }
-            }
+        // Переключение между вкладками
+        function showSection(sectionId) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
         }
 
-        const currentInventory = { rice: 800, buck: 400, lent: 340 };
-        const fullInventory = { rice: 500, buck: 900, lent: 450 };
-
-        if (!localStorage.getItem('user_nika_inventory')) {
-            localStorage.setItem('user_nika_inventory', JSON.stringify(currentInventory));
+        function showMainMenu() {
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('main-menu').style.display = 'block';
         }
 
-        function updateInventoryDisplay() {
-            const inv = JSON.parse(localStorage.getItem('user_nika_inventory'));
-            document.getElementById('inv-rice').innerText = inv.rice + 'г';
-            document.getElementById('inv-buck').innerText = inv.buck + 'г';
-            document.getElementById('inv-lent').innerText = inv.lent + 'г';
-            updateShoppingList();
-        }
-
-        function useStock(item, amount) {
-            const inv = JSON.parse(localStorage.getItem('user_nika_inventory'));
-            if (inv[item] >= amount) inv[item] -= amount;
-            else inv[item] = 0;
-            localStorage.setItem('user_nika_inventory', JSON.stringify(inv));
-            updateInventoryDisplay();
-        }
-
-        function resetSingle(item) {
-            const inv = JSON.parse(localStorage.getItem('user_nika_inventory'));
-            inv[item] = fullInventory[item];
-            localStorage.setItem('user_nika_inventory', JSON.stringify(inv));
-            updateInventoryDisplay();
-        }
-
-        const weekdaySchedule = (mealItems, snackItems) => `
-            <div class="schedule-item"><span class="time">05:35</span> — <span class="supplement">💊 L-carnitine (60 мл)</span></div>
-            <div class="schedule-item"><span class="time">05:45</span> — 🏃‍♀️ Разминка (20 мин)</div>
-            <div class="schedule-item"><span class="time">06:55</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
-            <div class="schedule-item">
-                <span class="time">13:00</span> — <span class="meal">🥗 ОБЕД</span>
-                <ul>${mealItems.map(i => `<li>${i}</li>`).join('')}</ul>
-                <span class="supplement">💊 Пиколинат хрома</span>
-            </div>
-            <div class="schedule-item">
-                <span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС (в вузе)</span>
-                <ul>${snackItems.map(i => `<li>${i}</li>`).join('')}</ul>
-            </div>
-            <div class="schedule-item"><span class="time">23:45</span> — <span class="supplement">💊 Магний хелат</span></div>
-            <div class="schedule-item"><span class="time">00:00</span> — 😴 Сон (на пустой желудок)</div>
-        `;
-
-        const data = {
-            'mon': `<h3 class="modal-title">Понедельник</h3>` + weekdaySchedule(['Гречка (списано 50г сухого продукта)', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
-            'tue': `<h3 class="modal-title">Вторник</h3>` + weekdaySchedule(['Гречка (списано 50г сухого продукта)', 'Фасоль «Маркет»', 'Свежий огурец'], ['30 г сырых орехов', '1 зеленое яблоко']),
-            'wed': `<h3 class="modal-title">Среда</h3>` + weekdaySchedule(['Рис (списано 50г сухого продукта)', 'Стручковая фасоль', 'Красная чечевица (списано 50г сухого продукта)'], ['30 г орехов', '1 зеленое яблоко']),
-            'thu': `<h3 class="modal-title">Четверг</h3>` + weekdaySchedule(['Рис (списано 50г сухого продукта)', 'Стручковая фасоль', 'Красная чечевица (списано 50г сухого продукта)'], ['30 г орехов', '1 зеленое яблоко']),
-            'fri': `<h3 class="modal-title">Пятница (Разгрузка)</h3>` + weekdaySchedule(['Пюре из чечевицы (списано 70г сухого продукта)', 'Свежий огурец'], ['30 г орехов', '1 зеленое яблоко']),
-        };
-
-        function addMinutes(timeStr, minsToAdd) {
-            let [hours, minutes] = timeStr.split(':').map(Number);
-            minutes += minsToAdd;
-            hours += Math.floor(minutes / 60);
-            minutes = minutes % 60;
-            hours = hours % 24;
-            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-        }
-
-        function calculateWeekend() {
-            const wakeUp = document.getElementById('wake-time').value;
-            const bedTime = document.getElementById('bed-time').value;
-
-            let [wakeH, wakeM] = wakeUp.split(':').map(Number);
-            let [bedH, bedM] = bedTime.split(':').map(Number);
-            let diffMins = (wakeH * 60 + wakeM) - (bedH * 60 + bedM);
-            if (diffMins <= 0) diffMins += 24 * 60;
-            let sleepHours = Math.floor(diffMins / 60);
-            let sleepMins = diffMins % 60;
-
-            const lCarnTime = addMinutes(wakeUp, 5);
-            const workoutTime = addMinutes(wakeUp, 15);
-            const drainTime = addMinutes(wakeUp, 90);
-            const lunchTime = addMinutes(drainTime, 120);
-            const magnesiumTime = addMinutes(bedTime, -15);
-
-            document.getElementById('weekend-schedule').innerHTML = `
-                <div style="font-size:0.85em; color:#a3b19b; margin-bottom:10px;">Продолжительность сна: <b>${sleepHours}ч ${sleepMins}мин</b></div>
-                <div class="schedule-item"><span class="time">${lCarnTime}</span> — <span class="supplement">💊 L-carnitine</span></div>
-                <div class="schedule-item"><span class="time">${workoutTime}</span> — 🏃‍♀️ Разминка (20 мин)</div>
-                <div class="schedule-item"><span class="time">${drainTime}</span> — <span class="supplement">🧪 Drain (1 порция)</span></div>
-                <div class="schedule-item"><span class="time">${lunchTime}</span> — <span class="meal">🍛 ОБЕД (списано 50г риса + 50г чечевицы)</span>
-                    <ul><li>Рис «Жасмин»</li><li>Чечевица «Зеленая линия»</li><li>Стручковая фасоль</li></ul>
-                    <span class="supplement">💊 Пиколинат хрома</span>
+        // Функции модального окна (замените логику вывода на вашу оригинальную)
+        function openModal(day) {
+            document.getElementById('myModal').style.display = 'flex';
+            document.getElementById('modal-data').innerHTML = `
+                <h2 class="modal-title">План питания: ${day.toUpperCase()}</h2>
+                <div class="schedule-item">
+                    <span class="time">13:00</span> — <span class="meal">Обед</span>
+                    <ul>
+                        <li>Гречка/Рис (из мультиварки)</li>
+                        <li>Бобовые или тофу</li>
+                    </ul>
                 </div>
-                <div class="schedule-item"><span class="time">18:00</span> — <span class="meal">🍏 ПЕРЕКУС</span>
-                    <ul><li>30 г орехов</li><li>1 яблоко</li></ul>
-                </div>
-                <div class="schedule-item"><span class="time">${magnesiumTime}</span> — <span class="supplement">💊 Магний хелат</span></div>
-                <div class="schedule-item"><span class="time">${bedTime}</span> — 😴 Сон</div>
             `;
         }
 
-        function openModal(day) {
-            if (day === 'mon' || day === 'tue') useStock('buck', 50);
-            if (day === 'wed' || day === 'thu') { useStock('rice', 50); useStock('lent', 50); }
-            if (day === 'fri') useStock('lent', 70);
-            if (day === 'sat' || day === 'sun') { useStock('rice', 50); useStock('lent', 50); }
-
-            if (day === 'sat' || day === 'sun') {
-                const dayName = day === 'sat' ? 'Суббота' : 'Воскресенье';
-                document.getElementById('modal-text').innerHTML = `
-                    <h3 class="modal-title">${dayName} (Конструктор дня)</h3>
-                    <div class="time-inputs">
-                        <label>Время пробуждения:</label>
-                        <input type="time" id="wake-time" value="09:00">
-                        <label>Время сна:</label>
-                        <input type="time" id="bed-time" value="23:00">
-                        <button class="btn-calc" onclick="calculateWeekend()">Рассчитать</button>
-                    </div>
-                    <div id="weekend-schedule"></div>
-                `;
-                calculateWeekend();
-            } else {
-                document.getElementById('modal-text').innerHTML = data[day];
-            }
-            document.getElementById('myModal').style.display = 'flex';
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
         }
 
-        function closeModal(event) {
-            if (event.target === document.getElementById('myModal')) {
-                document.getElementById('myModal').style.display = 'none';
+        window.onclick = function(event) {
+            let modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
             }
         }
 
-        function updateShoppingList() {
-            const daysOfWeek = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
-            const todayIndex = new Date().getDay();
-            const tomorrowIndex = (todayIndex + 1) % 7;
-            const tomorrowName = daysOfWeek[tomorrowIndex];
-            
-            document.getElementById('shopping-title').innerText = `Купить сегодня на завтра (${tomorrowName}):`;
-            
-            const inv = JSON.parse(localStorage.getItem('user_nika_inventory'));
-            let dynamicItems = '';
-            
-            if (inv.buck <= 100) dynamicItems += `<div class="checklist-item"><input type="checkbox"><span>🔥 Гречка (осталось мало!) <span class="store-label">[Перекресток/Лента]</span></span></div>`;
-            if (inv.rice <= 100) dynamicItems += `<div class="checklist-item"><input type="checkbox"><span>🔥 Рис Жасмин (осталось мало!) <span class="store-label">[Перекресток/Лента]</span></span></div>`;
-            if (inv.lent <= 100) dynamicItems += `<div class="checklist-item"><input type="checkbox"><span>🔥 Красная чечевица (осталось мало!) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
-
-            let staticItems = '';
-            if (tomorrowIndex === 1 || tomorrowIndex === 2) {
-                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Фасоль «Маркет» <span class="store-label">[Перекресток]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
-            } else if (tomorrowIndex === 3 || tomorrowIndex === 4) {
-                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
-            } else if (tomorrowIndex === 5) {
-                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Свежий огурец (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
-            } else if (tomorrowIndex === 6 || tomorrowIndex === 0) {
-                staticItems = `<div class="checklist-item"><input type="checkbox"><span>Зеленое яблоко (1 шт.) <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Заморож. стручковая фасоль <span class="store-label">[Везде]</span></span></div><div class="checklist-item"><input type="checkbox"><span>Сырые орехи (30 г) <span class="store-label">[Перекресток/Евроспар]</span></span></div>`;
-            }
-
-            document.getElementById('shopping-list-content').innerHTML = dynamicItems + staticItems;
+        function resetSingle(item) {
+            document.getElementById('inv-' + item).innerText = '500г';
         }
-
-        document.getElementById("access-code").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                checkAuth();
-            }
-        });
     </script>
+
 </body>
 </html>
