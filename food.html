@@ -44,6 +44,17 @@
         .supplement { color: #ba68c8; font-weight: bold; }
         ul { padding-left: 18px; margin: 4px 0; font-size: 0.9em; color: #b0b0b0; }
 
+        /* Инпуты времени и еды */
+        .time-input-block { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444; }
+        .time-input-block label { font-size: 0.9em; color: #bbb; display: block; margin-bottom: 5px; }
+        .time-input-block input { background: #121212; border: 1px solid #555; color: #fff; padding: 8px; border-radius: 6px; font-size: 1em; width: 100%; box-sizing: border-box; }
+        
+        .meal-input-block { margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
+        .meal-input-block label { font-size: 0.9em; color: #bbb; display: block; margin-bottom: 5px; }
+        .meal-input-block textarea { background: #121212; border: 1px solid #555; color: #fff; padding: 8px; border-radius: 6px; font-size: 0.95em; width: 100%; box-sizing: border-box; resize: vertical; min-height: 60px; }
+        .save-btn { background: #2e7d32; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.95em; }
+        .save-btn:hover { background: #388e3c; }
+
         /* Стили для блока тренировок */
         .workout-item { background: #252525; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #2196f3; }
         .workout-title { font-weight: bold; color: #ffffff; margin-bottom: 5px; }
@@ -73,7 +84,7 @@
         
         <!-- ГЛАВНОЕ ОКНО -->
         <div id="main-menu">
-            <h1>Мой План (Цель: 45 кг)</h1>
+            <h1>Мой План</h1>
             
             <div id="current-day-banner" class="today-banner"></div>
             
@@ -147,6 +158,8 @@
 
     <!-- Скрипты -->
     <script>
+        let currentDayKey = '';
+
         function checkAuth() {
             const code = document.getElementById('access-code').value;
             if (code === 'Ника Титова') {
@@ -182,49 +195,92 @@
             document.getElementById('main-menu').style.display = 'block';
         }
 
-        // База данных расписания и препаратов
-        const dayData = {
-            work: `
-                <div class="schedule-item"><span class="time">05:30</span> — Подъем</div>
-                <div class="schedule-item"><span class="supplement">💊 05:40</span> — L-carnitine 60 мл</div>
-                <div class="schedule-item"><span class="time">05:45</span> — Утренняя разминка (30 мин)</div>
-                <div class="schedule-item"><span class="supplement">💊 06:55</span> — Прием Drain</div>
-                <div class="schedule-item"><span class="time">08:15</span> — Выход (23 мин пешком от метро)</div>
-                <div class="schedule-item"><span class="time">09:00 - 17:00</span> — Работа</div>
-                <div class="schedule-item"><span class="meal">🍽️ 13:00</span> — Обед (Мультиварка)
-                    <ul>
-                        <li>Гречка/Рис с чечевицей или фасолью</li>
-                        <li>Овощной салат</li>
-                        <li><span class="supplement">💊 После еды:</span> Пиколинат хрома</li>
-                    </ul>
-                </div>
-                <div class="schedule-item"><span class="time">18:50 - 22:00</span> — Учеба</div>
-                <div class="schedule-item"><span class="meal">🍽️ 22:30</span> — Легкий ужин (Тофу или протеин)</div>
-                <div class="schedule-item"><span class="supplement">💊 23:30</span> — 2 таб. Магния хелата</div>
-                <div class="schedule-item"><span class="time">00:00</span> — Сон (5.5 часов)</div>
-            `,
-            weekend: `
-                <div class="schedule-item"><span class="time">08:00</span> — Подъем в выходной</div>
-                <div class="schedule-item"><span class="supplement">💊 08:15</span> — L-carnitine + Разминка</div>
-                <div class="schedule-item"><span class="meal">🍽️ 13:00</span> — Обед (Гарнир из мультиварки + овощи)</div>
-                <div class="schedule-item"><span class="supplement">💊 23:30</span> — Магний хелат перед сном</div>
-            `
-        };
+        // Помощник для сложения времени
+        function addMinutes(timeStr, minutesToAdd) {
+            let [hours, mins] = timeStr.split(':').map(Number);
+            let totalMins = hours * 60 + mins + minutesToAdd;
+            let newHours = Math.floor(totalMins / 60) % 24;
+            let newMins = totalMins % 60;
+            return `${String(newHours).padStart(2, '0')}:${String(newMins).padStart(2, '0')}`;
+        }
 
         function openModal(day) {
+            currentDayKey = day;
             document.getElementById('myModal').style.display = 'flex';
-            let title = '';
-            let content = '';
             
-            if (['mon','tue','wed','thu','fri'].includes(day)) {
-                title = 'Будний день (Работа + Учеба)';
-                content = dayData.work;
+            // Получаем время и еду из памяти браузера (по умолчанию в будни 05:30, в выходные 08:00)
+            let defaultTime = ['sat', 'sun'].includes(day) ? '08:00' : '05:30';
+            let savedTime = localStorage.getItem(`time_${day}`) || defaultTime;
+            let savedMeal = localStorage.getItem(`meal_${day}`) || '';
+
+            renderModalContent(day, savedTime, savedMeal);
+        }
+
+        function renderModalContent(day, wakeTime, mealText) {
+            let title = ['sat', 'sun'].includes(day) ? 'Выходной день' : 'Будний день (Работа + Учеба)';
+            
+            // Автоматический расчет распорядка от времени пробуждения
+            let lCarTime = addMinutes(wakeTime, 10);
+            let workOutTime = addMinutes(wakeTime, 15);
+            let drainTime = addMinutes(wakeTime, 85); // Примерно через 1 ч 25 мин после пробуждения
+            
+            let scheduleHTML = '';
+            
+            if (!['sat', 'sun'].includes(day)) {
+                scheduleHTML = `
+                    <div class="schedule-item"><span class="time">${wakeTime}</span> — Подъем</div>
+                    <div class="schedule-item"><span class="supplement">💊 ${lCarTime}</span> — L-carnitine 60 мл</div>
+                    <div class="schedule-item"><span class="time">${workOutTime}</span> — Утренняя разминка (30 мин)</div>
+                    <div class="schedule-item"><span class="supplement">💊 ${drainTime}</span> — Прием Drain</div>
+                    <div class="schedule-item"><span class="time">09:00 - 17:00</span> — Работа</div>
+                    <div class="schedule-item"><span class="meal">🍽️ 13:00</span> — Обед (Мультиварка)</div>
+                    <div class="schedule-item"><span class="supplement">💊 После еды:</span> Пиколинат хрома</div>
+                    <div class="schedule-item"><span class="time">18:50 - 22:00</span> — Учеба</div>
+                    <div class="schedule-item"><span class="supplement">💊 23:30</span> — 2 таб. Магния хелата</div>
+                    <div class="schedule-item"><span class="time">00:00</span> — Сон</div>
+                `;
             } else {
-                title = 'Выходной день';
-                content = dayData.weekend;
+                scheduleHTML = `
+                    <div class="schedule-item"><span class="time">${wakeTime}</span> — Подъем</div>
+                    <div class="schedule-item"><span class="supplement">💊 ${lCarTime}</span> — L-carnitine 60 мл</div>
+                    <div class="schedule-item"><span class="time">${workOutTime}</span> — Утренняя разминка (30 мин)</div>
+                    <div class="schedule-item"><span class="supplement">💊 ${drainTime}</span> — Прием Drain</div>
+                    <div class="schedule-item"><span class="meal">🍽️ 13:00</span> — Обед (Мультиварка)</div>
+                    <div class="schedule-item"><span class="supplement">💊 23:30</span> — Магний хелат перед сном</div>
+                `;
             }
-            
-            document.getElementById('modal-data').innerHTML = `<h2 class="modal-title">${title}</h2>${content}`;
+
+            document.getElementById('modal-data').innerHTML = `
+                <h2 class="modal-title">${title}</h2>
+                
+                <div class="time-input-block">
+                    <label>Изменить время пробуждения (ЧЧ:ММ):</label>
+                    <input type="time" id="wake-input" value="${wakeTime}" onchange="recalculateSchedule(this.value)">
+                </div>
+
+                <div id="dynamic-schedule">
+                    ${scheduleHTML}
+                </div>
+
+                <div class="meal-input-block">
+                    <label>Что сегодня поесть (из мультиварки):</label>
+                    <textarea id="meal-textarea" placeholder="Впишите сюда ваше меню...">${mealText}</textarea>
+                    <button class="save-btn" onclick="saveData()">Сохранить данные</button>
+                </div>
+            `;
+        }
+
+        // Пересчет графика прямо во время изменения ползунка времени
+        function recalculateSchedule(newTime) {
+            localStorage.setItem(`time_${currentDayKey}`, newTime);
+            let savedMeal = localStorage.getItem(`meal_${currentDayKey}`) || '';
+            renderModalContent(currentDayKey, newTime, savedMeal);
+        }
+
+        function saveData() {
+            let mealText = document.getElementById('meal-textarea').value;
+            localStorage.setItem(`meal_${currentDayKey}`, mealText);
+            alert('Данные дня успешно сохранены в памяти браузера!');
         }
 
         function closeModal() {
